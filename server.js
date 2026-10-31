@@ -13,7 +13,7 @@ const { Server } = require("socket.io");
 
 /* تحميل متغيرات البيئة من جذر المشروع */
 dotenv.config({
-    path: path.resolve(__dirname, "../.env")
+    path: path.resolve(__dirname, ".env")
 });
 
 /* تحميل قاعدة البيانات والمسارات بعد تحميل البيئة */
@@ -117,7 +117,7 @@ app.use("/api/conversations", conversationsRoutes);
 app.use("/api/teams", teamsRoutes);
 
 /* ملفات الواجهة */
-const websitePath = path.resolve(__dirname, "../website");
+const websitePath = path.resolve(__dirname, "website");
 
 app.use(express.static(websitePath));
 
