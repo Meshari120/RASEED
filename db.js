@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 
 /* تحميل متغيرات البيئة من جذر المشروع */
 dotenv.config({
-    path: path.resolve(__dirname, "../.env")
+   path: path.resolve(__dirname, ".env")
 });
 
 /* التحقق من بيانات الاتصال */
