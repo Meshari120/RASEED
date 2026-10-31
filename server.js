@@ -1,4 +1,5 @@
-﻿"use strict";
+
+"use strict";
 
 const express = require("express");
 const http = require("http");
@@ -9,45 +10,54 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const dotenv = require("dotenv");
 const { Server } = require("socket.io");
-const permissionsRoutes = require("./routes/permissions");
 
+/* تحميل متغيرات البيئة من جذر المشروع */
 dotenv.config({
-    path: path.resolve(__dirname, "../.env")
+    path: path.join(__dirname, ".env")
 });
 
+/* تحميل قاعدة البيانات والمسارات بعد تحميل البيئة */
 const { testDatabase, pool } = require("./db");
 
-const app = express();
-const server = http.createServer(app);
-
+const permissionsRoutes = require("./routes/permissions");
 const authRoutes = require("./routes/auth");
 const registerRoutes = require("./routes/register");
 const conversationsRoutes = require("./routes/conversations");
 const teamsRoutes = require("./routes/teams");
 
+const app = express();
+const server = http.createServer(app);
+
 const PORT = Number(process.env.PORT || 3000);
 const JWT_SECRET = process.env.JWT_SECRET;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const CLIENT_URL = process.env.CLIENT_URL || "";
 
+/* التحقق من مفتاح JWT */
 if (
     !JWT_SECRET ||
     JWT_SECRET.length < 32 ||
     JWT_SECRET.startsWith("REPLACE_WITH_")
 ) {
-    throw new Error("ضع JWT_SECRET قويًا في ملف .env.");
+    throw new Error("ضع JWT_SECRET قويًا في متغيرات البيئة.");
 }
 
+/* إعدادات الأمان */
 app.disable("x-powered-by");
+
 app.use(helmet({
     contentSecurityPolicy: false
 }));
 
-app.use(cors({
-    origin: CLIENT_URL,
+/* إعداد CORS */
+const corsOptions = {
+    origin: CLIENT_URL || false,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-}));
+};
 
+app.use(cors(corsOptions));
+
+/* استقبال البيانات */
 app.use(express.json({
     limit: "100kb",
     strict: true
@@ -58,6 +68,7 @@ app.use(express.urlencoded({
     limit: "20kb"
 }));
 
+/* تحديد عدد الطلبات */
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 100,
@@ -71,6 +82,7 @@ const apiLimiter = rateLimit({
 
 app.use("/api", apiLimiter);
 
+/* فحص السيرفر */
 app.get("/api/health", (req, res) => {
     res.json({
         success: true,
@@ -78,8 +90,7 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-app.use("/api/permissions", permissionsRoutes);
-
+/* فحص اتصال قاعدة البيانات */
 app.get("/api/health/database", async (req, res) => {
     try {
         await pool.execute("SELECT 1");
@@ -98,14 +109,15 @@ app.get("/api/health/database", async (req, res) => {
     }
 });
 
-/* مسارات API */
+/* مسارات النظام */
 app.use("/api/auth", authRoutes);
 app.use("/api/auth/register", registerRoutes);
+app.use("/api/permissions", permissionsRoutes);
 app.use("/api/conversations", conversationsRoutes);
 app.use("/api/teams", teamsRoutes);
 
 /* ملفات الواجهة */
-const websitePath = path.resolve(__dirname, "../website");
+const websitePath = path.join(__dirname, "website");
 
 app.use(express.static(websitePath));
 
@@ -113,10 +125,10 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(websitePath, "index.html"));
 });
 
-/* Socket.IO */
+/* إعداد Socket.IO */
 const io = new Server(server, {
     cors: {
-        origin: CLIENT_URL,
+        origin: CLIENT_URL || false,
         methods: ["GET", "POST"],
         credentials: true
     },
@@ -125,6 +137,7 @@ const io = new Server(server, {
 
 app.set("io", io);
 
+/* التحقق من هوية مستخدم Socket.IO */
 io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
 
@@ -145,12 +158,11 @@ io.use((socket, next) => {
     }
 });
 
+/* اتصالات القروبات */
 io.on("connection", (socket) => {
-    /*
-     * لا نسمح للعميل بالانضمام إلى أي قروب
-     *قبل التحقق من عضويته د.
-     */
+
     socket.on("team:join", async (payload, callback) => {
+
         const teamId = Number(payload?.teamId);
         const userId = Number(socket.user?.sub);
 
@@ -161,8 +173,12 @@ io.on("connection", (socket) => {
             userId < 1
         ) {
             if (typeof callback === "function") {
-                callback({ success: false, message: "بيانات غير صحيحة." });
+                callback({
+                    success: false,
+                    message: "بيانات غير صحيحة."
+                });
             }
+
             return;
         }
 
@@ -182,29 +198,36 @@ io.on("connection", (socket) => {
                         message: "لست عضوًا في هذا القروب."
                     });
                 }
+
                 return;
             }
 
             await socket.join(`team:${teamId}`);
 
             if (typeof callback === "function") {
-                callback({ success: true });
+                callback({
+                    success: true
+                });
             }
+
         } catch (error) {
             console.error("Socket team join failed:", error.message);
 
             if (typeof callback === "function") {
-                callback({ success: false, message: "تعذر الانضمام." });
+                callback({
+                    success: false,
+                    message: "تعذر الانضمام."
+                });
             }
         }
     });
 
     socket.on("disconnect", () => {
-        // لا توجد حاجة لتنفيذ عملية إضافية هنا.
+        // إغلاق الاتصال
     });
 });
 
-/* أخطاء المسارات غير الموجودة */
+/* معالجة المسارات غير الموجودة في API */
 app.use("/api", (req, res) => {
     res.status(404).json({
         success: false,
@@ -212,12 +235,14 @@ app.use("/api", (req, res) => {
     });
 });
 
+/* معالجة الصفحات غير الموجودة */
 app.use((req, res) => {
     res.status(404).send("الصفحة المطلوبة غير موجودة.");
 });
 
 /* معالج الأخطاء */
 app.use((error, req, res, next) => {
+
     if (res.headersSent) {
         return next(error);
     }
@@ -244,22 +269,30 @@ app.use((error, req, res, next) => {
     });
 });
 
+/* تشغيل السيرفر */
 async function startServer() {
+
     try {
         await testDatabase();
 
         server.listen(PORT, "0.0.0.0", () => {
-            console.log(`Raseed server running on port ${PORT}`);
-            console.log(`http://localhost:${PORT}`);
+            console.log(`RASEED server running on port ${PORT}`);
         });
+
     } catch (error) {
         console.error("Could not start server:", error.message);
+
         process.exitCode = 1;
+
         await pool.end().catch(() => {});
     }
 }
 
+/* إغلاق آمن للسيرفر */
 async function shutdown() {
+
+    console.log("Shutting down RASEED server...");
+
     io.close();
 
     server.close(async () => {
