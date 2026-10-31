@@ -13,7 +13,7 @@ const { Server } = require("socket.io");
 
 /* تحميل متغيرات البيئة من جذر المشروع */
 dotenv.config({
-    path: path.join(__dirname, ".env")
+    path: path.resolve(__dirname, "../.env")
 });
 
 /* تحميل قاعدة البيانات والمسارات بعد تحميل البيئة */
