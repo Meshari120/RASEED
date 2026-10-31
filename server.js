@@ -117,7 +117,7 @@ app.use("/api/conversations", conversationsRoutes);
 app.use("/api/teams", teamsRoutes);
 
 /* ملفات الواجهة */
-const websitePath = path.join(__dirname, "website");
+const websitePath = path.resolve(__dirname, "../website");
 
 app.use(express.static(websitePath));
 
