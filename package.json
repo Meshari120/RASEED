@@ -1,14 +1,19 @@
+
 {
   "name": "app-company-platform-server",
   "version": "1.0.0",
   "private": true,
-  "description": "Backend server for the APP company platform",
+  "description": "Backend server for the RASEED platform",
   "main": "server.js",
+  "engines": {
+    "node": ">=20 <23"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
