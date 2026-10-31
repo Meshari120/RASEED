@@ -1,0 +1,663 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14213d">
+  <meta name="description" content="رصيد - مركز المعرفة المؤسسية">
+  <title>المعرفة | رصيد</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f4f7fb;
+      color: #182235;
+    }
+
+    /* تخطيط مساحة العمل */
+    .layout {
+      display: flex;
+      align-items: stretch;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* القائمة الجانبية */
+    aside {
+      background: #14213d;
+      color: white;
+      padding: 24px 14px;
+      width: 250px;
+      flex: 0 0 250px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 27px;
+      font-weight: bold;
+      margin: 0 10px 25px;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 12px;
+      color: #bdc9dd;
+      font-weight: normal;
+      margin-top: 5px;
+    }
+
+    .workspace-label {
+      color: #9eafca;
+      font-size: 12px;
+      padding: 0 12px;
+      margin-bottom: 10px;
+    }
+
+    nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px;
+      color: #dce5f5;
+      text-decoration: none;
+      border-radius: 9px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: #2b3d63;
+      color: white;
+    }
+
+    nav a.active {
+      font-weight: bold;
+    }
+
+    .sidebar-bottom {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid #344563;
+    }
+
+    .security-note {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 8px;
+      margin-bottom: 12px;
+    }
+
+    .security-note > span {
+      font-size: 22px;
+    }
+
+    .security-note strong,
+    .security-note small {
+      display: block;
+    }
+
+    .security-note strong {
+      font-size: 13px;
+    }
+
+    .security-note small {
+      color: #bdc9dd;
+      font-size: 11px;
+      margin-top: 5px;
+      line-height: 1.6;
+    }
+
+    .logout-button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      color: #fecaca;
+      background: transparent;
+      border: 1px solid #475675;
+      border-radius: 9px;
+      font: inherit;
+      cursor: pointer;
+      text-align: right;
+    }
+
+    .logout-button:hover {
+      background: #263754;
+    }
+
+    /* المحتوى */
+    main {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 30px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: 25px;
+      margin: 0 0 8px;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 0 0 18px;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin: 0 0 7px;
+    }
+
+    p {
+      color: #697386;
+      line-height: 1.8;
+    }
+
+    header p {
+      margin: 0;
+    }
+
+    .breadcrumb {
+      color: #697386;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .breadcrumb span {
+      color: #2563eb;
+    }
+
+    .avatar {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-weight: bold;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e4eaf2;
+      border-radius: 13px;
+      padding: 20px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    input[type="search"] {
+      flex: 1;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #e1e7f0;
+      border-radius: 9px;
+      font: inherit;
+      background: white;
+    }
+
+    input:focus {
+      outline: 2px solid #bfdbfe;
+      border-color: #2563eb;
+    }
+
+    button,
+    .upload {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 0;
+      background: #2563eb;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 9px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button:hover,
+    .upload:hover {
+      background: #1d4ed8;
+    }
+
+    .upload {
+      flex-shrink: 0;
+    }
+
+    .upload input {
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: white;
+      border: 1px solid #e4eaf2;
+      border-radius: 13px;
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      border-radius: 12px;
+      font-size: 23px;
+      flex-shrink: 0;
+    }
+
+    .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .info h3 {
+      margin: 0 0 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .info p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .info small {
+      display: block;
+      color: #697386;
+      margin-top: 7px;
+    }
+
+    .message {
+      font-size: 13px;
+      margin-bottom: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 25px;
+      color: #697386;
+      display: none;
+    }
+
+    .app-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+      padding-top: 18px;
+      border-top: 1px solid #e4eaf2;
+      color: #697386;
+      font-size: 12px;
+    }
+
+    /* الشاشات الصغيرة */
+    @media (max-width: 750px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      aside {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        flex: 0 0 auto;
+        padding: 12px;
+      }
+
+      .brand {
+        font-size: 23px;
+        margin: 0 8px 10px;
+      }
+
+      .workspace-label {
+        margin-bottom: 7px;
+      }
+
+      nav {
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      nav a {
+        flex: 0 0 auto;
+        padding: 10px;
+        font-size: 13px;
+      }
+
+      .sidebar-bottom {
+        margin-top: 8px;
+        padding-top: 8px;
+      }
+
+      .security-note {
+        display: none;
+      }
+
+      .logout-button {
+        width: auto;
+        margin-top: 5px;
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      main {
+        padding: 17px;
+      }
+
+      .toolbar {
+        flex-wrap: wrap;
+      }
+
+      .toolbar input[type="search"] {
+        flex-basis: 100%;
+      }
+
+      .card {
+        flex-wrap: wrap;
+      }
+
+      .card button {
+        margin-right: auto;
+      }
+
+      header {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <!-- القائمة الجانبية المشتركة -->
+  <aside>
+    <div class="brand">
+      رصيد
+      <small>R A S E E D</small>
+    </div>
+
+    <div class="workspace-label">مساحة العمل</div>
+
+    <nav aria-label="القائمة الرئيسية">
+      <a href="home.html">
+        <span>⌂</span>
+        الرئيسية
+      </a>
+
+      <a href="teams.html">
+        <span>♧</span>
+        فرق العمل
+      </a>
+
+      <a class="active" href="knowledge.html" aria-current="page">
+        <span>▤</span>
+        المعرفة
+      </a>
+
+      <a href="tasks-decisions.html">
+        <span>☑</span>
+        المهام والقرارات
+      </a>
+
+      <a href="reports.html">
+        <span>▥</span>
+        التقارير
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <div class="security-note">
+        <span>⬡</span>
+        <div>
+          <strong>بيئة عمل آمنة</strong>
+          <small>معرفة شركتك تبقى ملكًا لها</small>
+        </div>
+      </div>
+    
+  </aside>
+
+  <!-- مساحة محتوى المعرفة -->
+  <main>
+
+    <header>
+      <div>
+        <div class="breadcrumb">
+          مساحة العمل / <span>المعرفة</span>
+        </div>
+
+        <h1>مركز المعرفة</h1>
+
+        <p>
+          مكتبة موحدة للمستندات والإجراءات والمعرفة الداخلية.
+        </p>
+      </div>
+
+      <div class="avatar" id="profileAvatar" aria-label="المستخدم">م</div>
+    </header>
+
+    <section class="panel">
+
+      <h2>المستندات والإجراءات</h2>
+
+      <div class="toolbar">
+
+        <input
+          id="search"
+          type="search"
+          placeholder="ابحث عن مستند..."
+          aria-label="البحث عن مستند"
+        >
+
+        <label class="upload">
+          ＋ إضافة مستند
+          <input
+            id="file"
+            type="file"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+          >
+        </label>
+
+      </div>
+
+      <div class="cards" id="docs">
+
+        <article class="card">
+          <div class="icon">📄</div>
+
+          <div class="info">
+            <h3>دليل إجراءات العمل</h3>
+            <p>إجراءات وسياسات العمل الداخلية</p>
+            <small>PDF · آخر تحديث: 20 أكتوبر 2026</small>
+          </div>
+
+          <button type="button" class="view-document">
+            عرض
+          </button>
+        </article>
+
+        <article class="card">
+          <div class="icon">📊</div>
+
+          <div class="info">
+            <h3>قالب تقرير الأداء</h3>
+            <p>قالب موحد لإعداد التقارير الشهرية</p>
+            <small>XLSX · آخر تحديث: 18 أكتوبر 2026</small>
+          </div>
+
+          <button type="button" class="view-document">
+            عرض
+          </button>
+        </article>
+
+        <article class="card">
+          <div class="icon">📘</div>
+
+          <div class="info">
+            <h3>دليل استخدام الأنظمة</h3>
+            <p>إرشادات الدخول واستخدام أنظمة الشركة</p>
+            <small>PDF · آخر تحديث: 15 أكتوبر 2026</small>
+          </div>
+
+          <button type="button" class="view-document">
+            عرض
+          </button>
+        </article>
+
+      </div>
+
+      <div id="emptyState" class="empty-state">
+        لا توجد مستندات تطابق البحث.
+      </div>
+
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+
+    </section>
+
+    <footer class="app-footer">
+      <div>
+        <strong>رصيد</strong>
+        — من أدواتك اليومية إلى ذاكرة مؤسسية حقيقية.
+      </div>
+
+      <div>الخصوصية · المعرفة · التعاون</div>
+    </footer>
+
+  </main>
+
+</div>
+
+<script>
+  "use strict";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("search");
+    const fileInput = document.getElementById("file");
+    const message = document.getElementById("message");
+    const emptyState = document.getElementById("emptyState");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // عرض اسم المستخدم المحفوظ إن وجد.
+    try {
+      const user = JSON.parse(localStorage.getItem("app_user") || "null");
+
+      if (user) {
+        const name =
+          user.fullName ||
+          user.name ||
+          user.username ||
+          "";
+
+        if (name) {
+          document.getElementById("profileAvatar").textContent =
+            name.trim().charAt(0) || "م";
+        }
+      }
+    } catch (error) {
+      console.warn("تعذر قراءة بيانات المستخدم.");
+    }
+
+    // البحث في المستندات الظاهرة.
+    function filterDocs() {
+      const query = searchInput.value.trim().toLocaleLowerCase("ar");
+      const cards = document.querySelectorAll("#docs .card");
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const matches = card.textContent
+          .toLocaleLowerCase("ar")
+          .includes(query);
+
+        card.style.display = matches ? "flex" : "none";
+
+        if (matches) {
+          visibleCount++;
+        }
+      });
+
+      emptyState.style.display =
+        visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterDocs);
+
+    // اختيار ملف لا يعني رفعه أو حفظه في قاعدة البيانات.
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files && fileInput.files[0];
+
+      if (!file) return;
+
+      message.textContent =
+        "تم اختيار الملف: " + file.name +
+        ". لم يُرفع الملف إلى السيرفر بعد؛ يلزم ربط الرفع بواجهة API.";
+
+      message.style.color = "#166534";
+    });
+
+    // المستندات التجريبية لا تحتوي على روابط فعلية.
+    document.querySelectorAll(".view-document").forEach((button) => {
+      button.addEventListener("click", () => {
+        message.textContent =
+          "هذا مستند تجريبي، ويجب ربطه بملف فعلي أو بقاعدة البيانات لعرضه.";
+
+        message.style.color = "#92400e";
+      });
+    });
+
+   
+   
+  });
+</script>
+
+</body>
+</html>

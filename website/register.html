@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102f58">
+  <meta name="description" content="إنشاء حساب جديد في منصة رصيد">
+  <title>رصيد | إنشاء حساب</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .register-card {
+      width: 100%;
+      max-width: 480px;
+      box-sizing: border-box;
+    }
+
+    .register-card form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .register-card input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .register-card label {
+      margin-top: 5px;
+    }
+
+    .register-card button[type="submit"] {
+      margin-top: 12px;
+    }
+
+    .form-message {
+      font-size: 14px;
+      margin-top: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .error {
+      color: #c62828;
+    }
+
+    .success {
+      color: #18864b;
+    }
+
+    .text-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .register-card button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="login-screen">
+
+    <div class="login-brand">
+      <div class="brand-symbol">ر</div>
+      <div>
+        <h1>رصيد <span>Raseed</span></h1>
+        <p>الذاكرة التشغيلية الذكية للمؤسسات</p>
+      </div>
+    </div>
+
+    <div class="login-card register-card">
+      <div class="ai-icon">✳</div>
+
+      <h2>إنشاء حساب جديد</h2>
+      <p>أدخل بياناتك لإنشاء حساب في رصيد.</p>
+
+      <form id="registerForm" novalidate>
+
+        <label for="registerName">الاسم الكامل</label>
+        <input
+          id="registerName"
+          name="name"
+          type="text"
+          placeholder="أدخل اسمك الكامل"
+          autocomplete="name"
+          minlength="2"
+          maxlength="255"
+          required
+        >
+
+        <label for="registerEmail">البريد الإلكتروني</label>
+        <input
+          id="registerEmail"
+          name="email"
+          type="email"
+          placeholder="example@company.com"
+          autocomplete="email"
+          maxlength="254"
+          required
+        >
+
+        <label for="registerPhone">رقم الجوال</label>
+        <input
+          id="registerPhone"
+          name="phone"
+          type="tel"
+          placeholder="+9665XXXXXXXX"
+          autocomplete="tel"
+          pattern="\+9665[0-9]{8}"
+          title="أدخل رقم الجوال بالصيغة +9665XXXXXXXX"
+          required
+        >
+
+        <label for="registerPassword">كلمة المرور</label>
+        <input
+          id="registerPassword"
+          name="password"
+          type="password"
+          placeholder="كلمة المرور"
+          minlength="6"
+          autocomplete="new-password"
+          required
+        >
+
+        <label for="confirmPassword">تأكيد كلمة المرور</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          placeholder="أعد كتابة كلمة المرور"
+          minlength="6"
+          autocomplete="new-password"
+          required
+        >
+
+        <button id="registerSubmitBtn" type="submit">
+          إنشاء الحساب
+        </button>
+
+        <p
+          id="registerError"
+          class="form-message error"
+          role="alert"
+          aria-live="polite"
+        ></p>
+
+        <p
+          id="registerSuccess"
+          class="form-message success"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </form>
+
+      <a class="text-button" href="index.html">
+        لديك حساب بالفعل؟ تسجيل الدخول
+      </a>
+
+      <div class="login-note">منصة داخلية آمنة لفريقك</div>
+    </div>
+  </section>
+
+  <script src="assets/js/api/apiClient.js"></script>
+  <script src="assets/js/auth/register.js"></script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const form = document.getElementById("registerForm");
+      const password = document.getElementById("registerPassword");
+      const confirmPassword = document.getElementById("confirmPassword");
+
+      if (!form || !password || !confirmPassword) {
+        console.error("Raseed: عناصر نموذج التسجيل غير مكتملة.");
+        return;
+      }
+
+      function validatePasswordMatch() {
+        confirmPassword.setCustomValidity(
+          confirmPassword.value &&
+          confirmPassword.value !== password.value
+            ? "كلمتا المرور غير متطابقتين."
+            : ""
+        );
+      }
+
+      password.addEventListener("input", validatePasswordMatch);
+      confirmPassword.addEventListener("input", validatePasswordMatch);
+
+      form.addEventListener("submit", (event) => {
+        validatePasswordMatch();
+
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          form.reportValidity();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

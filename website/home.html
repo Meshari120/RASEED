@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102f58">
+  <meta name="description" content="رصيد - الذاكرة التشغيلية الذكية للمؤسسات">
+  <title>رصيد | الرئيسية</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    a.nav-item,
+    a.hero-button,
+    a.text-button,
+    a.primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    a.nav-item {
+      width: 100%;
+    }
+
+    a.nav-item:hover,
+    a.hero-button:hover,
+    a.text-button:hover,
+    a.primary-button:hover {
+      opacity: 0.85;
+    }
+
+    .nav-item.active {
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* تخطيط مساحة العمل */
+    #appSection.app-layout {
+      display: flex;
+      align-items: stretch;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* تثبيت القائمة الجانبية */
+    #appSection .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      min-height: 100vh;
+      flex: 0 0 250px;
+      width: 250px;
+      align-self: flex-start;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 100;
+    }
+
+    #appSection .main-area {
+      flex: 1 1 auto;
+      min-width: 0;
+      width: calc(100% - 250px);
+    }
+
+    #appSection .main-nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    #appSection .main-nav .nav-item {
+      justify-content: flex-start;
+      text-align: right;
+    }
+
+    #appSection .main-nav .nav-item.active {
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      #appSection.app-layout {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #appSection .sidebar {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        flex: 0 0 auto;
+        overflow: visible;
+      }
+
+      #appSection .main-nav {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      #appSection .main-nav .nav-item {
+        width: auto;
+        min-width: max-content;
+        white-space: nowrap;
+      }
+
+      #appSection .main-area {
+        width: 100%;
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section id="appSection" class="app-layout">
+
+    <!-- القائمة الجانبية -->
+    <aside class="sidebar">
+
+      <div class="sidebar-brand">
+        <div class="brand-symbol small">ر</div>
+
+        <div>
+          <strong>رصيد</strong>
+          <small>R A S E E D</small>
+        </div>
+      </div>
+
+      <div class="workspace-label">مساحة العمل</div>
+
+      <nav class="main-nav" aria-label="القائمة الرئيسية">
+
+        <a class="nav-item active" href="home.html" aria-current="page">
+          <span>⌂</span>
+          الرئيسية
+        </a>
+
+        <a class="nav-item" href="teams.html">
+          <span>♧</span>
+          فرق العمل
+        </a>
+
+        <a class="nav-item" href="knowledge.html">
+          <span>▤</span>
+          المعرفة
+        </a>
+
+        <a class="nav-item" href="tasks-decisions.html">
+          <span>☑</span>
+          المهام والقرارات
+        </a>
+
+        <a class="nav-item" href="reports.html">
+          <span>▥</span>
+          التقارير
+        </a>
+
+      </nav>
+
+      <div class="sidebar-bottom">
+
+        <div class="security-note">
+          <span>⬡</span>
+
+          <div>
+            <strong>بيئة عمل آمنة</strong>
+            <small>معرفة شركتك تبقى ملكًا لها</small>
+          </div>
+        </div>
+
+        <a class="nav-item" href="settings.html">
+          <span>⚙</span>
+          الإعدادات
+        </a>
+
+        <button
+          id="logoutBtn"
+          class="logout-button"
+          type="button"
+        >
+          ↪ تسجيل الخروج
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-area">
+
+      <header class="top-header">
+
+        <div>
+          <div class="breadcrumb">
+            مساحة العمل / <span id="pageTitle">الرئيسية</span>
+          </div>
+
+          <h2 id="welcomeTitle">أهلًا بك في رصيد</h2>
+
+          <p>
+            حوّل محادثات فريقك إلى معرفة وقرارات قابلة للاستخدام.
+          </p>
+        </div>
+
+        <div class="header-actions">
+
+          <button
+            class="icon-button"
+            id="notificationsBtn"
+            type="button"
+            title="التنبيهات"
+            aria-label="التنبيهات"
+          >
+            ♧
+          </button>
+
+          <div class="profile-chip">
+            <div class="avatar">م</div>
+
+            <div>
+              <strong id="profileName">مستخدم رصيد</strong>
+              <small>عضو في المؤسسة</small>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- الصفحة الرئيسية -->
+      <section id="homeView" class="page-view">
+
+        <div class="hero-banner">
+
+          <div>
+            <span class="eyebrow">الذاكرة التشغيلية الذكية</span>
+
+            <h2>كل ما يهم فريقك، في مكان واحد.</h2>
+
+            <p>
+              تواصل، شارك المعرفة، وتابع قرارات العمل دون فقدان السياق.
+            </p>
+
+            <a class="hero-button" href="teams.html">
+              استكشف فرق العمل ←
+            </a>
+          </div>
+
+          <div class="hero-art">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="brain-symbol">✳</div>
+            <span class="floating-card">المعرفة + القرارات</span>
+          </div>
+
+        </div>
+
+        <!-- مساحة العمل -->
+        <div class="section-heading">
+
+          <div>
+            <h3>مساحة عملك</h3>
+            <p>ابدأ من الفرق والمحادثات المتاحة لحسابك.</p>
+          </div>
+
+          <button
+            id="refreshBtn"
+            class="outline-button"
+            type="button"
+          >
+            ↻ تحديث البيانات
+          </button>
+
+        </div>
+
+        <!-- البطاقات الرئيسية -->
+        <div class="overview-grid">
+
+          <article class="overview-card">
+            <div class="card-icon blue">♧</div>
+            <span>فرق العمل</span>
+            <strong>فرقك</strong>
+            <small>محادثات مستقلة لكل فريق</small>
+
+            <a class="text-button" href="teams.html">
+              عرض الفرق ←
+            </a>
+          </article>
+
+          <article class="overview-card">
+            <div class="card-icon green">▤</div>
+            <span>المعرفة المؤسسية</span>
+            <strong>معرفة منظمة</strong>
+            <small>احتفظ بالخبرات والقرارات المهمة</small>
+
+            <a class="text-button" href="knowledge.html">
+              استعراض المعرفة ←
+            </a>
+          </article>
+
+          <article class="overview-card">
+            <div class="card-icon purple">☑</div>
+            <span>المهام والقرارات</span>
+            <strong>متابعة العمل</strong>
+            <small>مساحة مخصصة لمخرجات الفريق</small>
+
+            <a class="text-button" href="tasks-decisions.html">
+              متابعة المهام ←
+            </a>
+          </article>
+
+          <article class="overview-card">
+            <div class="card-icon orange">▥</div>
+            <span>التقارير والتنبيهات</span>
+            <strong>رؤية أوضح</strong>
+            <small>متابعة المعرفة وحالة العمل</small>
+
+            <a class="text-button" href="reports.html">
+              عرض التقارير ←
+            </a>
+          </article>
+
+        </div>
+
+        <!-- قائمة الفرق -->
+        <div class="section-heading">
+
+          <div>
+            <h3>فرق العمل</h3>
+            <p>الفرق المتاحة لحسابك.</p>
+          </div>
+
+        </div>
+
+        <div class="content-grid">
+
+          <section class="panel">
+
+            <div class="panel-heading">
+              <h3>قائمة الفرق</h3>
+
+              <span class="status-dot">
+                حالة الاتصال تعتمد على الخادم
+              </span>
+            </div>
+
+            <div id="teamsList" class="teams-list"></div>
+
+            <p id="teamsMessage" class="muted" role="status">
+              جارٍ تحميل فرق العمل...
+            </p>
+
+            <a class="text-button" href="teams.html">
+              عرض جميع الفرق ←
+            </a>
+
+          </section>
+
+          <section class="panel intro-panel">
+
+            <div class="intro-icon">✳</div>
+
+            <h3>المعرفة تبدأ من المحادثة</h3>
+
+            <p>
+              اجمع نقاشات فريقك في مكان واحد، ثم طوّرها إلى قرارات
+              وخبرات يمكن الرجوع إليها.
+            </p>
+
+            <a class="primary-button" href="teams.html">
+              فتح محادثات الفرق
+            </a>
+
+          </section>
+
+        </div>
+
+      </section>
+
+      <!-- تذييل الصفحة -->
+      <footer class="app-footer">
+
+        <div>
+          <strong>رصيد</strong>
+          — من أدواتك اليومية إلى ذاكرة مؤسسية حقيقية.
+        </div>
+
+        <div>الخصوصية · المعرفة · التعاون</div>
+
+      </footer>
+
+    </main>
+  </section>
+
+  <!-- ملفات JavaScript -->
+  <script src="assets/js/api/apiClient.js"></script>
+  <script src="assets/js/auth/login.js"></script>
+  <script src="assets/js/teams/teams.js"></script>
+  <script src="assets/js/chat/messages.js"></script>
+  <script src="assets/js/teams/teamsView.js"></script>
+  <script src="assets/js/chat/messagesView.js"></script>
+  <script src="assets/js/app.js"></script>
+
+  <!-- وظائف الرئيسية -->
+  <script>
+    (() => {
+      "use strict";
+
+      // تسجيل الخروج والانتقال إلى index.html
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("app_token");
+          localStorage.removeItem("app_user");
+
+          window.location.href = "index.html";
+        });
+      }
+
+      // التنبيهات
+      const notificationsBtn =
+        document.getElementById("notificationsBtn");
+
+      if (notificationsBtn) {
+        notificationsBtn.addEventListener("click", () => {
+          alert("قسم التنبيهات يحتاج إلى ربطه بنظام التنبيهات.");
+        });
+      }
+
+      // تحديث البيانات
+      const refreshBtn =
+        document.getElementById("refreshBtn");
+
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => {
+          if (window.RaseedTeamsView?.load) {
+            window.RaseedTeamsView.load();
+          } else {
+            window.location.reload();
+          }
+        });
+      }
+
+      // عرض اسم المستخدم المحفوظ
+      try {
+        const savedUser = JSON.parse(
+          localStorage.getItem("app_user") || "null"
+        );
+
+        if (savedUser) {
+          const name =
+            savedUser.fullName ||
+            savedUser.name ||
+            savedUser.username;
+
+          const profileName =
+            document.getElementById("profileName");
+
+          if (name && profileName) {
+            profileName.textContent = name;
+          }
+        }
+      } catch (error) {
+        console.warn("تعذر تحميل بيانات المستخدم المحفوظة.");
+      }
+
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102f58">
+  <meta name="description" content="تقارير أداء الفرق والمهام في منصة رصيد">
+  <title>التقارير | رصيد</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f4f7fb;
+      color: #182235;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #14213d;
+      color: white;
+      width: 250px;
+      min-width: 250px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      padding: 24px 14px;
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-size: 27px;
+      font-weight: bold;
+      margin: 0 10px 25px;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 12px;
+      color: #bdc9dd;
+      font-weight: normal;
+      margin-top: 5px;
+    }
+
+    nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    nav a {
+      display: block;
+      padding: 13px;
+      color: #dce5f5;
+      text-decoration: none;
+      border-radius: 9px;
+      transition: background 0.2s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: #2b3d63;
+      color: white;
+    }
+
+    .main-area {
+      flex: 1;
+      min-width: 0;
+      padding: 30px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: 25px;
+      margin: 0 0 8px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    p {
+      color: #697386;
+      line-height: 1.8;
+    }
+
+    button {
+      border: 0;
+      background: #2563eb;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 9px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .panel,
+    .stat {
+      background: white;
+      border: 1px solid #e4eaf2;
+      border-radius: 13px;
+      padding: 20px;
+      margin-bottom: 17px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+    }
+
+    .stat span {
+      font-size: 13px;
+      color: #697386;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 27px;
+      margin-top: 8px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 145px minmax(50px, 1fr) 45px;
+      gap: 12px;
+      align-items: center;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 10px;
+      background: #e8edf5;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: #2563eb;
+      border-radius: 20px;
+    }
+
+    .avatar {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-weight: bold;
+    }
+
+    .report-note {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 9px;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 750px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 12px;
+      }
+
+      .brand {
+        margin: 0 8px 10px;
+        font-size: 23px;
+      }
+
+      nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+      }
+
+      nav a {
+        white-space: nowrap;
+        padding: 10px;
+        font-size: 13px;
+      }
+
+      .main-area {
+        padding: 17px;
+      }
+
+      .bar-row {
+        grid-template-columns: 105px minmax(40px, 1fr) 40px;
+        gap: 7px;
+        font-size: 12px;
+      }
+
+      .panel,
+      .stat {
+        padding: 15px;
+      }
+    }
+
+    @media print {
+      .sidebar,
+      button,
+      .avatar {
+        display: none !important;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .main-area {
+        padding: 0;
+      }
+
+      body {
+        background: white;
+      }
+
+      .panel,
+      .stat {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="brand">
+        رصيد
+        <small>منصة تنظيم العمل</small>
+      </div>
+
+      <nav>
+        <a href="home.html">⌂ الرئيسية</a>
+        <a href="teams.html">♧ فرق العمل</a>
+        <a href="knowledge.html">▤ المعرفة</a>
+        <a href="tasks-decisions.html">☑ المهام والقرارات</a>
+        <a class="active" href="reports.html" aria-current="page">▥ التقارير</a>
+        <a href="settings.html">⚙ الإعدادات</a>
+      </nav>
+    </aside>
+
+    <main class="main-area">
+      <header>
+        <div>
+          <h1>التقارير</h1>
+          <p>نظرة عامة على أداء الفرق والمهام والقرارات.</p>
+        </div>
+
+        <div class="avatar" id="profileAvatar" aria-label="صورة الحساب">م</div>
+      </header>
+
+      <section class="stats" aria-label="المؤشرات الرئيسية">
+        <div class="stat">
+          <span>إنجاز المهام</span>
+          <strong>68%</strong>
+        </div>
+
+        <div class="stat">
+          <span>الفرق النشطة</span>
+          <strong>4</strong>
+        </div>
+
+        <div class="stat">
+          <span>القرارات المسجلة</span>
+          <strong>12</strong>
+        </div>
+
+        <div class="stat">
+          <span>المستندات</span>
+          <strong>24</strong>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>إنجاز المهام حسب الفريق</h2>
+
+        <div class="bar-row">
+          <span>فريق البيانات</span>
+          <div class="bar" role="progressbar" aria-label="إنجاز فريق البيانات" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+            <i style="width: 80%"></i>
+          </div>
+          <b>80%</b>
+        </div>
+
+        <div class="bar-row">
+          <span>فريق التقنية</span>
+          <div class="bar" role="progressbar" aria-label="إنجاز فريق التقنية" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
+            <i style="width: 65%"></i>
+          </div>
+          <b>65%</b>
+        </div>
+
+        <div class="bar-row">
+          <span>فريق الأمن السيبراني</span>
+          <div class="bar" role="progressbar" aria-label="إنجاز فريق الأمن السيبراني" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+            <i style="width: 72%"></i>
+          </div>
+          <b>72%</b>
+        </div>
+
+        <div class="bar-row">
+          <span>فريق المشاريع</span>
+          <div class="bar" role="progressbar" aria-label="إنجاز فريق المشاريع" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">
+            <i style="width: 55%"></i>
+          </div>
+          <b>55%</b>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>ملخص الفترة</h2>
+
+        <p>
+          <b>أبرز الإنجازات:</b>
+          توحيد قالب التقارير ومراجعة صلاحيات المستخدمين.
+        </p>
+
+        <p>
+          <b>أعمال تحتاج متابعة:</b>
+          تحديث دليل الإجراءات واختبار النسخة الجديدة.
+        </p>
+
+        <div class="report-note">
+          الأرقام المعروضة تجريبية حاليًا وليست إحصائيات فعلية من قاعدة البيانات.
+        </div>
+
+        <p>
+          <button type="button" id="printReportBtn">طباعة التقرير / حفظ PDF</button>
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // عرض الحرف الأول من اسم المستخدم إن كان محفوظًا.
+    try {
+      const savedUser = localStorage.getItem("app_user");
+
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+        const name = user.name || user.fullName || "";
+        const avatar = document.getElementById("profileAvatar");
+
+        if (name && avatar) {
+          avatar.textContent = name.trim().charAt(0);
+        }
+      }
+    } catch (error) {
+      console.warn("تعذر قراءة بيانات الحساب المحفوظة.");
+    }
+
+    document
+      .getElementById("printReportBtn")
+      .addEventListener("click", () => window.print());
+  </script>
+</body>
+</html>

@@ -1,0 +1,919 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102f58">
+    <meta name="description" content="إدارة فرق العمل ومحادثاتها في منصة رصيد">
+    <title>فرق العمل | رصيد</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f4f7fb;
+            color: #182235;
+        }
+
+        .layout { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            background: #14213d;
+            color: white;
+            padding: 24px 14px;
+            overflow-y: auto;
+        }
+
+        .brand {
+            font-size: 27px;
+            font-weight: bold;
+            margin: 0 10px 25px;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 12px;
+            color: #bdc9dd;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+
+        nav { display: grid; gap: 7px; }
+
+        nav a {
+            display: block;
+            padding: 13px;
+            color: #dce5f5;
+            text-decoration: none;
+            border-radius: 9px;
+        }
+
+        nav a:hover, nav a.active {
+            background: #2b3d63;
+            color: white;
+        }
+
+        .main-area {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 { font-size: 25px; margin: 0 0 8px; }
+        h2 { font-size: 18px; }
+        p { color: #697386; line-height: 1.8; }
+
+        button {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 9px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        button:hover { background: #1d4ed8; }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        input, textarea {
+            padding: 11px;
+            border: 1px solid #e1e7f0;
+            border-radius: 9px;
+            font: inherit;
+            width: 100%;
+            background: white;
+            color: #182235;
+        }
+
+        textarea { resize: vertical; min-height: 90px; }
+
+        input:focus, textarea:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: #2563eb;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat, .panel, .card {
+            background: white;
+            border: 1px solid #e4eaf2;
+            border-radius: 13px;
+        }
+
+        .stat { padding: 18px; }
+
+        .stat span {
+            color: #697386;
+            font-size: 13px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 27px;
+            margin-top: 8px;
+        }
+
+        .panel { padding: 20px; margin-bottom: 17px; }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .toolbar input { max-width: 360px; }
+
+        .cards { display: grid; gap: 12px; }
+
+        .card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            background: #eff6ff;
+            border-radius: 12px;
+            font-size: 23px;
+        }
+
+        .info { flex: 1; min-width: 0; }
+
+        .info h3 { margin: 0 0 5px; }
+
+        .info p { margin: 0; font-size: 14px; }
+
+        .info small {
+            display: block;
+            color: #697386;
+            margin-top: 7px;
+        }
+
+        .avatar {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .message {
+            font-size: 14px;
+            overflow-wrap: anywhere;
+            margin-top: 15px;
+        }
+
+        .empty-state {
+            display: none;
+            padding: 25px;
+            text-align: center;
+            color: #697386;
+        }
+
+        .loading {
+            padding: 20px;
+            text-align: center;
+            color: #697386;
+        }
+
+        .group-label {
+            color: #2563eb;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* نافذة إنشاء الفريق */
+
+        #createModal {
+            width: calc(100% - 30px);
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: none;
+            border-radius: 16px;
+            padding: 24px;
+            background: white;
+            color: #182235;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        #createModal::backdrop {
+            background: rgba(15, 23, 42, .65);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .modal-header h2 { margin: 0; }
+
+        .close-modal {
+            background: #eef2f7;
+            color: #334155;
+            padding: 7px 12px;
+        }
+
+        .close-modal:hover { background: #e2e8f0; }
+
+        .form-group { margin-bottom: 15px; }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button { flex: 1; }
+
+        .cancel-button {
+            background: #e8edf5;
+            color: #334155;
+        }
+
+        .cancel-button:hover { background: #dbe3ef; }
+
+        @media (max-width: 750px) {
+            .layout { display: block; }
+
+            .sidebar {
+                width: 100%;
+                min-width: 0;
+                height: auto;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+                padding: 12px;
+            }
+
+            .brand {
+                margin: 0 8px 10px;
+                font-size: 23px;
+            }
+
+            nav {
+                display: flex;
+                overflow-x: auto;
+                gap: 5px;
+            }
+
+            nav a {
+                white-space: nowrap;
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .main-area { padding: 17px; }
+
+            .toolbar { flex-wrap: wrap; }
+
+            .toolbar input { max-width: none; }
+
+            .card { flex-wrap: wrap; }
+
+            .card button { width: 100%; }
+
+            .panel { padding: 15px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            رصيد
+            <small>منصة تنظيم العمل</small>
+        </div>
+
+        <nav aria-label="القائمة الرئيسية">
+            <a href="home.html">⌂ الرئيسية</a>
+            <a class="active" href="teams.html" aria-current="page">♧ فرق العمل</a>
+            <a href="knowledge.html">▤ المعرفة</a>
+            <a href="tasks-decisions.html">☑ المهام والقرارات</a>
+            <a href="reports.html">▥ التقارير</a>
+            <a href="settings.html">⚙ الإعدادات</a>
+        </nav>
+    </aside>
+
+    <main class="main-area">
+
+        <header>
+            <div>
+                <h1>فرق العمل</h1>
+                <p>
+                    أنشئ المجموعات والقروبات ونظّم أعضاءها واجعل لكل قروب مساحة عمل ومحادثة خاصة.
+                </p>
+            </div>
+
+            <div class="avatar" id="profileAvatar" aria-label="المستخدم">م</div>
+        </header>
+
+        <section class="stats" aria-label="إحصائيات الفرق">
+
+            <div class="stat">
+                <span>إجمالي القروبات</span>
+                <strong id="teamCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>الأعضاء</span>
+                <strong id="memberCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>رسائل اليوم</span>
+                <strong id="messageCount">—</strong>
+            </div>
+
+        </section>
+
+        <section class="panel">
+
+            <div class="toolbar">
+
+                <input
+                    id="search"
+                    type="search"
+                    placeholder="ابحث عن قروب..."
+                    aria-label="البحث عن قروب"
+                >
+
+                <button id="createTeamBtn" type="button">
+                    ＋ إنشاء فريق
+                </button>
+
+            </div>
+
+            <div class="cards" id="teams">
+                <div class="loading">جاري تحميل الفرق...</div>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                لا توجد فرق حتى الآن.
+            </div>
+
+            <p id="message" class="message" role="status" aria-live="polite"></p>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- نافذة إنشاء المجموعة والقروب باستخدام dialog -->
+
+<dialog id="createModal">
+
+    <div class="modal-header">
+
+        <h2>إنشاء مجموعة وقروب</h2>
+
+        <button
+            type="button"
+            class="close-modal"
+            id="closeModalBtn"
+            aria-label="إغلاق"
+        >✕</button>
+
+    </div>
+
+    <form id="createTeamForm">
+
+        <div class="form-group">
+            <label for="groupName">اسم المجموعة</label>
+            <input
+                id="groupName"
+                name="groupName"
+                type="text"
+                maxlength="150"
+                placeholder="مثال: تقنية المعلومات"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="teamName">اسم القروب</label>
+            <input
+                id="teamName"
+                name="teamName"
+                type="text"
+                maxlength="150"
+                placeholder="مثال: قروب البرمجة"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="teamDescription">وصف القروب (اختياري)</label>
+            <textarea
+                id="teamDescription"
+                name="description"
+                maxlength="500"
+                placeholder="اكتب وصفًا مختصرًا للقروب..."
+            ></textarea>
+        </div>
+
+        <div class="modal-actions">
+
+            <button type="submit" id="submitCreateBtn">
+                إنشاء
+            </button>
+
+            <button
+                type="button"
+                class="cancel-button"
+                id="cancelModalBtn"
+            >
+                إلغاء
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+<script>
+"use strict";
+
+/* إعدادات الاتصال */
+
+const API_URL = "/api";
+const token = localStorage.getItem("app_token");
+
+const $ = (id) => document.getElementById(id);
+document.getElementById("message").textContent =
+    "اختبار: JavaScript يعمل في الصفحة";
+
+let teams = [];
+
+/* عناصر النافذة */
+
+const createModal = $("createModal");
+
+/* التحقق من تسجيل الدخول */
+
+if (!token) {
+    window.location.href = "login.html";
+}
+
+/* الاتصال بالسيرفر */
+
+async function apiRequest(path, options = {}) {
+
+    const response = await fetch(API_URL + path, {
+        ...options,
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+
+        localStorage.removeItem("app_token");
+        localStorage.removeItem("app_user");
+
+        window.location.href = "login.html";
+
+        throw new Error("انتهت جلسة تسجيل الدخول.");
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            data.error ||
+            "حدث خطأ أثناء الاتصال بالسيرفر."
+        );
+    }
+
+    return data;
+}
+
+/* الرسائل */
+
+function showMessage(text, isError = false) {
+
+    $("message").textContent = text;
+
+    $("message").style.color = isError
+        ? "#b91c1c"
+        : "#166534";
+}
+
+function clearMessage() {
+    $("message").textContent = "";
+}
+
+/* بيانات المستخدم */
+
+function loadProfile() {
+
+    try {
+
+        const savedUser = JSON.parse(
+            localStorage.getItem("app_user") || "{}"
+        );
+
+        const name =
+            savedUser.name ||
+            savedUser.fullName ||
+            savedUser.full_name ||
+            "";
+
+        if (name.trim()) {
+            $("profileAvatar").textContent = name.trim().charAt(0);
+        }
+
+    } catch (error) {
+        console.warn("تعذر تحميل بيانات المستخدم.");
+    }
+}
+
+/* فتح النافذة */
+
+function openCreateModal() {
+
+    clearMessage();
+
+    $("createTeamForm").reset();
+
+    if (typeof createModal.showModal === "function") {
+        createModal.showModal();
+        $("groupName").focus();
+    } else {
+        alert("المتصفح لا يدعم نافذة dialog.");
+    }
+}
+
+/* إغلاق النافذة */
+
+function closeCreateModal() {
+
+    if (createModal.open) {
+        createModal.close();
+    }
+}
+
+/* ربط الأزرار */
+
+$("createTeamBtn").onclick = openCreateModal;
+
+$("closeModalBtn").onclick = closeCreateModal;
+
+$("cancelModalBtn").onclick = closeCreateModal;
+
+/* تحميل القروبات */
+
+async function loadTeams() {
+
+    const container = $("teams");
+
+    container.innerHTML =
+        '<div class="loading">جاري تحميل الفرق...</div>';
+
+    clearMessage();
+
+    try {
+
+        const data = await apiRequest("/teams");
+
+        teams = Array.isArray(data.teams)
+            ? data.teams
+            : [];
+
+        renderTeams();
+        updateStats();
+
+    } catch (error) {
+
+        container.innerHTML = "";
+
+        $("emptyState").style.display = "block";
+        $("emptyState").textContent = "تعذر تحميل الفرق.";
+
+        showMessage(error.message, true);
+    }
+}
+
+/* عرض القروبات */
+
+function renderTeams() {
+
+    const container = $("teams");
+
+    container.innerHTML = "";
+
+    if (teams.length === 0) {
+
+        $("emptyState").style.display = "block";
+
+        $("emptyState").textContent =
+            "لا توجد فرق حتى الآن. يمكنك إنشاء فريق جديد.";
+
+        updateStats();
+
+        return;
+    }
+
+    $("emptyState").style.display = "none";
+
+    teams.forEach((team) => {
+
+        const card = document.createElement("article");
+
+        card.className = "card";
+        card.dataset.teamName = team.name || "";
+
+        const icon = document.createElement("div");
+
+        icon.className = "icon";
+        icon.textContent = "👥";
+
+        const info = document.createElement("div");
+
+        info.className = "info";
+
+        if (team.group_name) {
+
+            const group = document.createElement("small");
+
+            group.className = "group-label";
+            group.textContent = team.group_name;
+
+            info.appendChild(group);
+        }
+
+        const title = document.createElement("h3");
+
+        title.textContent = team.name || "فريق بدون اسم";
+
+        const description = document.createElement("p");
+
+        description.textContent =
+            team.description ||
+            "مساحة عمل ومحادثة خاصة بالفريق";
+
+        const members = document.createElement("small");
+
+        const count = Number(
+            team.member_count ??
+            team.members_count ??
+            0
+        );
+
+        members.textContent = `${count} أعضاء`;
+
+        info.append(title, description, members);
+
+        const openButton = document.createElement("button");
+
+        openButton.type = "button";
+        openButton.textContent = "فتح الفريق";
+
+        openButton.addEventListener("click", () => {
+            openTeam(team.id);
+        });
+
+        card.append(icon, info, openButton);
+
+        container.appendChild(card);
+
+    });
+
+    filterTeams();
+}
+
+/* فتح صفحة محادثة الفريق */
+
+function openTeam(teamId) {
+
+    if (!teamId) {
+        showMessage("رقم الفريق غير صالح.", true);
+        return;
+    }
+
+    window.location.href =
+        `chat.html?teamId=${encodeURIComponent(teamId)}`;
+}
+
+/* إنشاء المجموعة والقروب */
+
+$("createTeamForm").addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    const groupName = $("groupName").value.trim();
+    const teamName = $("teamName").value.trim();
+    const description = $("teamDescription").value.trim();
+
+    if (!groupName || !teamName) {
+
+        alert("يرجى إدخال اسم المجموعة واسم القروب.");
+
+        return;
+    }
+
+    const duplicate = teams.some(team =>
+        (team.name || "").trim().toLowerCase() ===
+        teamName.toLowerCase()
+    );
+
+    if (duplicate) {
+
+        alert("يوجد قروب بهذا الاسم بالفعل.");
+
+        return;
+    }
+
+    const button = $("submitCreateBtn");
+
+    button.disabled = true;
+    button.textContent = "جاري الإنشاء...";
+
+    try {
+
+        const data = await apiRequest("/teams", {
+
+            method: "POST",
+
+            body: JSON.stringify({
+                groupName,
+                teamName,
+                description
+            })
+
+        });
+
+        closeCreateModal();
+
+        showMessage(
+            data.message ||
+            "تم إنشاء المجموعة والقروب بنجاح."
+        );
+
+        await loadTeams();
+
+        const createdTeam =
+            data.team ||
+            data.data?.team ||
+            data.data;
+
+        if (createdTeam?.id) {
+
+            openTeam(createdTeam.id);
+
+        } else {
+
+            const newTeam = teams.find(team =>
+                (team.name || "").trim() === teamName
+            );
+
+            if (newTeam) {
+                openTeam(newTeam.id);
+            }
+        }
+
+    } catch (error) {
+
+        alert(error.message);
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "إنشاء";
+    }
+
+});
+
+/* البحث */
+
+function filterTeams() {
+
+    const query = $("search").value.trim().toLowerCase();
+
+    const cards = [
+        ...document.querySelectorAll("#teams .card")
+    ];
+
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+
+        const name =
+            (card.dataset.teamName || "").toLowerCase();
+
+        const matches = name.includes(query);
+
+        card.style.display = matches ? "flex" : "none";
+
+        if (matches) visibleCount++;
+    });
+
+    $("emptyState").style.display =
+        visibleCount === 0 ? "block" : "none";
+
+    if (visibleCount === 0) {
+
+        $("emptyState").textContent = query
+            ? "لا توجد فرق تطابق البحث."
+            : "لا توجد فرق حتى الآن.";
+    }
+}
+
+$("search").addEventListener("input", filterTeams);
+
+/* تحديث الإحصائيات */
+
+function updateStats() {
+
+    $("teamCount").textContent = teams.length;
+
+    const members = teams.reduce((total, team) => {
+
+        return total + Number(
+            team.member_count ??
+            team.members_count ??
+            0
+        );
+
+    }, 0);
+
+    $("memberCount").textContent = members;
+    $("messageCount").textContent = "—";
+}
+
+/* تشغيل الصفحة */
+
+async function init() {
+
+    if (!token) return;
+
+    loadProfile();
+
+    await loadTeams();
+}
+
+init();
+
+</script>
+
+</body>
+</html>

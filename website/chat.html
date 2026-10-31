@@ -1,0 +1,782 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#14213d">
+    <title>محادثات الفرق | رصيد</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f4f7fb;
+            color: #182235;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            height: 100vh;
+        }
+
+        aside {
+            background: #14213d;
+            color: white;
+            padding: 22px 15px;
+            overflow-y: auto;
+        }
+
+        .brand {
+            font-size: 27px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 12px;
+            color: #bdc9dd;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            color: #aebbd0;
+            font-size: 13px;
+            margin: 25px 8px 12px;
+        }
+
+        .back-link {
+            display: block;
+            color: #dce5f5;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 9px;
+            background: #233553;
+        }
+
+        .back-link:hover {
+            background: #2b3d63;
+        }
+
+        .team-list {
+            display: grid;
+            gap: 7px;
+        }
+
+        .team-item {
+            width: 100%;
+            text-align: right;
+            padding: 13px;
+            color: #dce5f5;
+            background: transparent;
+            border-radius: 9px;
+            font: inherit;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .team-item:hover,
+        .team-item.active {
+            background: #2b3d63;
+            color: white;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100vh;
+        }
+
+        .chat-header {
+            padding: 20px 25px;
+            background: white;
+            border-bottom: 1px solid #e4eaf2;
+        }
+
+        .chat-header h1 {
+            font-size: 21px;
+            margin: 0 0 7px;
+        }
+
+        .chat-header p {
+            margin: 0;
+            color: #697386;
+            font-size: 13px;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .empty-state {
+            margin: auto;
+            text-align: center;
+            color: #697386;
+            line-height: 2;
+        }
+
+        .message {
+            max-width: 70%;
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #e4eaf2;
+            border-radius: 12px 12px 12px 3px;
+            padding: 12px 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .message.mine {
+            align-self: flex-end;
+            background: #dbeafe;
+            border-color: #bfdbfe;
+            border-radius: 12px 12px 3px 12px;
+        }
+
+        .message-author {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 7px;
+        }
+
+        .message-text {
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: #697386;
+            margin-top: 7px;
+            text-align: left;
+        }
+
+        .message-form {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e4eaf2;
+        }
+
+        .message-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #e1e7f0;
+            border-radius: 9px;
+            font: inherit;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .send-btn {
+            background: #2563eb;
+            color: white;
+            min-width: 85px;
+            border: 0;
+            border-radius: 9px;
+            padding: 10px 13px;
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .send-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .notice {
+            padding: 10px 15px;
+            font-size: 13px;
+            color: #b91c1c;
+        }
+
+        @media (max-width: 750px) {
+            .layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                min-height: 100vh;
+                height: auto;
+            }
+
+            aside {
+                padding: 12px;
+            }
+
+            .brand {
+                margin-bottom: 12px;
+            }
+
+            .section-title {
+                margin: 12px 5px;
+            }
+
+            .team-list {
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .team-item {
+                width: auto;
+                white-space: nowrap;
+            }
+
+            main {
+                height: calc(100vh - 190px);
+                min-height: 450px;
+            }
+
+            .messages {
+                min-height: 250px;
+                padding: 15px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside>
+        <div class="brand">
+            رصيد
+            <small>محادثات فرق العمل</small>
+        </div>
+
+        <a class="back-link" href="teams.html">
+            ← العودة إلى فرق العمل
+        </a>
+
+        <div class="section-title">فرق العمل</div>
+
+        <div class="team-list" id="teamList">
+            <p>جاري تحميل الفرق...</p>
+        </div>
+    </aside>
+
+    <main>
+
+        <header class="chat-header">
+            <h1 id="chatTitle">محادثات الفريق</h1>
+            <p id="chatSubtitle">اختر فريقًا لبدء المحادثة</p>
+        </header>
+
+        <div class="notice" id="notice" role="status" aria-live="polite"></div>
+
+        <section class="messages" id="messages">
+            <div class="empty-state">
+                <h2>مرحبًا بك في محادثات رصيد</h2>
+                <p>اختر فريقًا من القائمة لعرض محادثاته.</p>
+            </div>
+        </section>
+
+        <form class="message-form" id="messageForm">
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="اكتب رسالتك هنا..."
+                autocomplete="off"
+                maxlength="4000"
+                disabled
+            >
+
+            <button
+                type="submit"
+                class="send-btn"
+                id="sendButton"
+                disabled
+            >
+                إرسال
+            </button>
+        </form>
+
+    </main>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+"use strict";
+
+const API_URL = "/api";
+
+const token = localStorage.getItem("app_token");
+
+let savedUser = {};
+
+try {
+    savedUser = JSON.parse(
+        localStorage.getItem("app_user") || "{}"
+    );
+} catch {
+    savedUser = {};
+}
+
+let currentTeamId = null;
+let socket = null;
+let teams = [];
+let loadedMessageIds = new Set();
+
+const teamList = document.getElementById("teamList");
+const messagesBox = document.getElementById("messages");
+const messageInput = document.getElementById("messageInput");
+const sendButton = document.getElementById("sendButton");
+const notice = document.getElementById("notice");
+
+function showNotice(message) {
+    notice.textContent = message;
+}
+
+function clearNotice() {
+    notice.textContent = "";
+}
+
+/* الاتصال بالـ API */
+
+async function apiRequest(path, options = {}) {
+
+    if (!token) {
+        throw new Error("يرجى تسجيل الدخول أولًا.");
+    }
+
+    const response = await fetch(API_URL + path, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            ...(options.headers || {})
+        }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+
+        localStorage.removeItem("app_token");
+        localStorage.removeItem("app_user");
+
+        window.location.href = "login.html";
+
+        throw new Error("انتهت جلسة تسجيل الدخول.");
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            data.error ||
+            "حدث خطأ في الاتصال بالسيرفر."
+        );
+    }
+
+    return data;
+}
+
+/* تحميل الفرق */
+
+async function loadTeams() {
+
+    try {
+
+        const data = await apiRequest("/teams");
+
+        teams = Array.isArray(data.teams)
+            ? data.teams
+            : [];
+
+        teamList.innerHTML = "";
+
+        if (!teams.length) {
+
+            teamList.textContent = "لا توجد فرق حتى الآن.";
+
+            messagesBox.innerHTML = `
+                <div class="empty-state">
+                    <h2>لا توجد فرق متاحة</h2>
+                    <p>أنشئ فريقًا أولًا من صفحة فرق العمل.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        teams.forEach(team => {
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "team-item";
+            button.dataset.teamId = team.id;
+            button.textContent = "♧ " + team.name;
+
+            button.addEventListener("click", () => {
+                openTeam(team);
+            });
+
+            teamList.appendChild(button);
+        });
+
+        const params = new URLSearchParams(
+            window.location.search
+        );
+
+        const requestedTeamId = params.get("teamId");
+
+        const selectedTeam = teams.find(team =>
+            String(team.id) === String(requestedTeamId)
+        );
+
+        if (selectedTeam) {
+
+            await openTeam(selectedTeam);
+
+        } else if (requestedTeamId) {
+
+            showNotice("القروب المطلوب غير موجود ضمن فرقك.");
+
+        }
+
+    } catch (error) {
+
+        showNotice(error.message);
+        teamList.textContent = "تعذر تحميل الفرق.";
+    }
+}
+
+/* فتح محادثة الفريق */
+
+async function openTeam(team) {
+
+    if (!team || !team.id) return;
+
+    currentTeamId = team.id;
+    loadedMessageIds.clear();
+
+    document.getElementById("chatTitle").textContent =
+        team.name || "محادثات الفريق";
+
+    document.getElementById("chatSubtitle").textContent =
+        team.group_name
+            ? `المجموعة: ${team.group_name}`
+            : "محادثة فريق العمل";
+
+    messageInput.disabled = false;
+    sendButton.disabled = false;
+
+    document.querySelectorAll(".team-item").forEach(button => {
+        button.classList.toggle(
+            "active",
+            String(button.dataset.teamId) === String(team.id)
+        );
+    });
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("teamId", team.id);
+
+    window.history.replaceState({}, "", url);
+
+    messagesBox.innerHTML =
+        '<div class="empty-state">جاري تحميل الرسائل...</div>';
+
+    clearNotice();
+
+    if (socket && socket.connected) {
+
+        socket.emit(
+            "team:join",
+            { teamId: team.id },
+            (result) => {
+                if (!result?.success) {
+                    showNotice(
+                        result?.message || "تعذر الاتصال بمحادثة الفريق."
+                    );
+                }
+            }
+        );
+    }
+
+    await loadMessages(team.id);
+}
+
+/* تحميل الرسائل */
+
+async function loadMessages(teamId) {
+
+    try {
+
+        const data = await apiRequest(
+            `/teams/${encodeURIComponent(teamId)}/messages`
+        );
+
+        if (String(currentTeamId) !== String(teamId)) return;
+
+        const messages = Array.isArray(data.messages)
+            ? data.messages
+            : [];
+
+        messagesBox.innerHTML = "";
+        loadedMessageIds.clear();
+
+        if (!messages.length) {
+
+            messagesBox.innerHTML =
+                '<div class="empty-state">لا توجد رسائل بعد. ابدأ المحادثة!</div>';
+
+            return;
+        }
+
+        messages.forEach(message => {
+            addMessage(message);
+        });
+
+        scrollToBottom();
+
+    } catch (error) {
+
+        showNotice(error.message);
+
+        messagesBox.innerHTML =
+            '<div class="empty-state">تعذر تحميل الرسائل.</div>';
+    }
+}
+
+/* عرض رسالة */
+
+function addMessage(message) {
+
+    const messageId = message.id;
+
+    if (
+        messageId &&
+        loadedMessageIds.has(String(messageId))
+    ) {
+        return;
+    }
+
+    if (messageId) {
+        loadedMessageIds.add(String(messageId));
+    }
+
+    const empty = messagesBox.querySelector(".empty-state");
+
+    if (empty) {
+        messagesBox.innerHTML = "";
+    }
+
+    const senderId = message.sender_id ?? message.senderId;
+    const myId = savedUser.id;
+
+    const isMine =
+        senderId != null &&
+        myId != null &&
+        String(senderId) === String(myId);
+
+    const row = document.createElement("div");
+
+    row.className = isMine
+        ? "message mine"
+        : "message";
+
+    const author = document.createElement("div");
+
+    author.className = "message-author";
+
+    author.textContent = isMine
+        ? "أنت"
+        : (
+            message.sender_name ||
+            message.full_name ||
+            message.senderName ||
+            "عضو الفريق"
+        );
+
+    const text = document.createElement("div");
+
+    text.className = "message-text";
+
+    // السيرفر يرجع نص الرسالة في body
+    text.textContent =
+        message.body ||
+        message.content ||
+        message.message ||
+        "";
+
+    const time = document.createElement("div");
+
+    time.className = "message-time";
+
+    if (message.created_at || message.createdAt) {
+
+        const date = new Date(
+            message.created_at || message.createdAt
+        );
+
+        if (!Number.isNaN(date.getTime())) {
+
+            time.textContent = date.toLocaleString("ar-SA", {
+                dateStyle: "short",
+                timeStyle: "short"
+            });
+        }
+    }
+
+    row.append(author, text, time);
+
+    messagesBox.appendChild(row);
+
+    scrollToBottom();
+}
+
+/* النزول إلى آخر المحادثة */
+
+function scrollToBottom() {
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+/* إرسال رسالة */
+
+document.getElementById("messageForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const body = messageInput.value.trim();
+
+        if (!body || !currentTeamId) return;
+
+        sendButton.disabled = true;
+
+        try {
+
+            clearNotice();
+
+            const teamId = currentTeamId;
+
+            const data = await apiRequest(
+                `/teams/${encodeURIComponent(teamId)}/messages`,
+                {
+                    method: "POST",
+
+                    // السيرفر يستقبل body وليس content
+                    body: JSON.stringify({ body })
+                }
+            );
+
+            if (String(currentTeamId) !== String(teamId)) return;
+
+            messageInput.value = "";
+
+            if (data.message) {
+
+                addMessage(data.message);
+
+            } else {
+
+                await loadMessages(teamId);
+            }
+
+        } catch (error) {
+
+            showNotice(error.message);
+
+        } finally {
+
+            sendButton.disabled = !currentTeamId;
+            messageInput.focus();
+        }
+    });
+
+/* اتصال Socket.IO */
+
+function connectSocket() {
+
+    if (!token || typeof io !== "function") {
+        return;
+    }
+
+    socket = io({
+        auth: {
+            token
+        }
+    });
+
+    socket.on("connect", () => {
+
+        if (currentTeamId) {
+
+            socket.emit(
+                "team:join",
+                { teamId: currentTeamId },
+                result => {
+                    if (!result?.success) {
+                        showNotice(
+                            result?.message || "تعذر الانضمام إلى المحادثة."
+                        );
+                    }
+                }
+            );
+        }
+    });
+
+    socket.on("team:new-message", message => {
+
+        const messageTeamId =
+            message.team_id ?? message.teamId;
+
+        if (
+            currentTeamId &&
+            String(messageTeamId) === String(currentTeamId)
+        ) {
+            addMessage(message);
+        }
+    });
+
+    socket.on("connect_error", error => {
+        console.error(
+            "Socket connection error:",
+            error.message
+        );
+    });
+}
+
+/* تشغيل الصفحة */
+
+async function init() {
+
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    connectSocket();
+
+    await loadTeams();
+}
+
+init();
+
+</script>
+
+</body>
+</html>

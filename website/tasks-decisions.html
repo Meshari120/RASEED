@@ -1,0 +1,578 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>المهام والقرارات | رصيد</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f4f7fb;
+            color: #182235;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            min-height: 100vh;
+        }
+
+        /* القائمة الجانبية */
+        aside {
+            background: #14213d;
+            color: white;
+            padding: 24px 14px;
+        }
+
+        .brand {
+            font-size: 27px;
+            font-weight: bold;
+            margin: 0 10px 25px;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 12px;
+            color: #bdc9dd;
+            font-weight: normal;
+        }
+
+        nav {
+            display: grid;
+            gap: 7px;
+        }
+
+        nav a {
+            padding: 13px;
+            color: #dce5f5;
+            text-decoration: none;
+            border-radius: 9px;
+            transition: background 0.2s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #2b3d63;
+            color: white;
+        }
+
+        /* المحتوى الرئيسي */
+        main {
+            padding: 30px;
+            min-width: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin: 0 0 8px;
+        }
+
+        h2 {
+            font-size: 19px;
+        }
+
+        p {
+            color: #697386;
+            line-height: 1.8;
+        }
+
+        /* الأزرار والحقول */
+        button {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 9px;
+            cursor: pointer;
+            font: inherit;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        input,
+        select {
+            padding: 11px;
+            border: 1px solid #e1e7f0;
+            border-radius: 9px;
+            font: inherit;
+            max-width: 100%;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: #2563eb;
+        }
+
+        /* البطاقات */
+        .panel,
+        .stat {
+            background: white;
+            border: 1px solid #e4eaf2;
+            border-radius: 13px;
+            padding: 18px;
+            margin-bottom: 17px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+        }
+
+        .stat span {
+            color: #697386;
+            font-size: 13px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 26px;
+            margin-top: 7px;
+        }
+
+        /* شريط الأدوات */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* المهام والقرارات */
+        .task {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid #e4eaf2;
+        }
+
+        .task:last-child {
+            border-bottom: 0;
+        }
+
+        .task input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task h3 {
+            margin: 0 0 5px;
+            font-size: 15px;
+        }
+
+        .task small {
+            color: #697386;
+            line-height: 1.7;
+        }
+
+        .status {
+            font-size: 12px;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #fef3c7;
+            color: #92400e;
+            white-space: nowrap;
+        }
+
+        .status.done {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* الصورة الشخصية */
+        .avatar {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        #decisionMessage {
+            margin-top: 10px;
+        }
+
+        /* الشاشات الصغيرة */
+        @media (max-width: 750px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            aside {
+                padding: 12px;
+            }
+
+            .brand {
+                margin-bottom: 10px;
+            }
+
+            nav {
+                display: flex;
+                overflow-x: auto;
+            }
+
+            nav a {
+                white-space: nowrap;
+                padding: 10px;
+            }
+
+            main {
+                padding: 17px;
+            }
+
+            .toolbar {
+                flex-wrap: wrap;
+            }
+
+            .task {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- القائمة الجانبية -->
+    <aside>
+        <div class="brand">
+            رصيد
+            <small>منصة تنظيم العمل</small>
+        </div>
+
+        <nav aria-label="القائمة الرئيسية">
+            <a href="home.html">
+                <span>⌂</span>
+                الرئيسية
+            </a>
+
+            <a href="teams.html">♧ فرق العمل</a>
+
+            <a href="knowledge.html">▤ المعرفة</a>
+
+            <a class="active" href="tasks-decisions.html">
+                ☑ المهام والقرارات
+            </a>
+
+            <a href="reports.html">▥ التقارير</a>
+
+            <a href="settings.html">⚙ الإعدادات</a>
+        </nav>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <main>
+
+        <header>
+            <div>
+                <h1>المهام والقرارات</h1>
+                <p>
+                    تابع الإنجاز والمواعيد والمسؤوليات وسجّل القرارات.
+                </p>
+            </div>
+
+            <div class="avatar">م</div>
+        </header>
+
+        <!-- إحصائيات المهام -->
+        <div class="stats">
+
+            <div class="stat">
+                <span>كل المهام</span>
+                <strong id="total">4</strong>
+            </div>
+
+            <div class="stat">
+                <span>قيد التنفيذ</span>
+                <strong id="pending">3</strong>
+            </div>
+
+            <div class="stat">
+                <span>مكتملة</span>
+                <strong id="completed">1</strong>
+            </div>
+
+        </div>
+
+        <!-- قسم المهام -->
+        <section class="panel">
+
+            <div class="toolbar">
+                <input
+                    id="newTask"
+                    type="text"
+                    placeholder="اكتب اسم المهمة الجديدة"
+                >
+
+                <button type="button" onclick="addTask()">
+                    ＋ إضافة مهمة
+                </button>
+            </div>
+
+            <div class="toolbar">
+                <h2>قائمة المهام</h2>
+
+                <select id="taskFilter" onchange="filterTasks(this.value)">
+                    <option value="all">كل الحالات</option>
+                    <option value="open">قيد التنفيذ</option>
+                    <option value="done">مكتملة</option>
+                </select>
+            </div>
+
+            <div id="tasks">
+
+                <div class="task">
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="updateStats()"
+                    >
+
+                    <div class="task-content">
+                        <h3>إعداد تقرير الأداء الشهري</h3>
+                        <small>فريق البيانات · الموعد: 28 أكتوبر</small>
+                    </div>
+
+                    <span class="status done">مكتملة</span>
+                </div>
+
+                <div class="task">
+                    <input
+                        type="checkbox"
+                        onchange="updateStats()"
+                    >
+
+                    <div class="task-content">
+                        <h3>مراجعة صلاحيات المستخدمين</h3>
+                        <small>فريق التقنية · الموعد: 29 أكتوبر</small>
+                    </div>
+
+                    <span class="status">قيد التنفيذ</span>
+                </div>
+
+                <div class="task">
+                    <input
+                        type="checkbox"
+                        onchange="updateStats()"
+                    >
+
+                    <div class="task-content">
+                        <h3>تحديث دليل إجراءات العمل</h3>
+                        <small>فريق المشاريع · الموعد: 30 أكتوبر</small>
+                    </div>
+
+                    <span class="status">قيد التنفيذ</span>
+                </div>
+
+                <div class="task">
+                    <input
+                        type="checkbox"
+                        onchange="updateStats()"
+                    >
+
+                    <div class="task-content">
+                        <h3>اختبار النسخة الجديدة</h3>
+                        <small>فريق التقنية · الموعد: 31 أكتوبر</small>
+                    </div>
+
+                    <span class="status">قيد التنفيذ</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- قسم القرارات -->
+        <section class="panel">
+
+            <h2>سجل القرارات</h2>
+
+            <div id="decisions">
+
+                <div class="task">
+                    <div class="task-content">
+                        <h3>اعتماد اجتماع متابعة أسبوعي</h3>
+                        <small>
+                            اجتماع أسبوعي لمراجعة تقدم الفرق ·
+                            22 أكتوبر 2026
+                        </small>
+                    </div>
+                </div>
+
+                <div class="task">
+                    <div class="task-content">
+                        <h3>توحيد قالب التقارير</h3>
+                        <small>
+                            استخدام قالب موحد لجميع تقارير الأداء ·
+                            20 أكتوبر 2026
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="button" onclick="addDecision()">
+                ＋ إضافة قرار
+            </button>
+
+            <div id="decisionMessage"></div>
+
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // تحديث إحصائيات المهام
+    function updateStats() {
+        const rows = [
+            ...document.querySelectorAll("#tasks .task")
+        ];
+
+        const done = rows.filter(row =>
+            row.querySelector('input[type="checkbox"]').checked
+        ).length;
+
+        document.getElementById("total").textContent = rows.length;
+        document.getElementById("completed").textContent = done;
+        document.getElementById("pending").textContent = rows.length - done;
+
+        rows.forEach(row => {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const status = row.querySelector(".status");
+            const isDone = checkbox.checked;
+
+            status.textContent = isDone ? "مكتملة" : "قيد التنفيذ";
+            status.className = isDone ? "status done" : "status";
+        });
+
+        filterTasks(document.getElementById("taskFilter").value);
+    }
+
+    // إضافة مهمة جديدة
+    function addTask() {
+        const input = document.getElementById("newTask");
+        const name = input.value.trim();
+
+        if (!name) {
+            input.focus();
+            return;
+        }
+
+        const row = document.createElement("div");
+        row.className = "task";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.addEventListener("change", updateStats);
+
+        const content = document.createElement("div");
+        content.className = "task-content";
+
+        const title = document.createElement("h3");
+        title.textContent = name;
+
+        const details = document.createElement("small");
+        details.textContent = "مهمة جديدة · حدّد الموعد لاحقًا";
+
+        const status = document.createElement("span");
+        status.className = "status";
+        status.textContent = "قيد التنفيذ";
+
+        content.appendChild(title);
+        content.appendChild(details);
+
+        row.appendChild(checkbox);
+        row.appendChild(content);
+        row.appendChild(status);
+
+        document.getElementById("tasks").prepend(row);
+
+        input.value = "";
+
+        updateStats();
+    }
+
+    // تصفية المهام
+    function filterTasks(value) {
+        const rows = document.querySelectorAll("#tasks .task");
+
+        rows.forEach(row => {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const isDone = checkbox.checked;
+
+            const visible =
+                value === "all" ||
+                (value === "done" && isDone) ||
+                (value === "open" && !isDone);
+
+            row.style.display = visible ? "flex" : "none";
+        });
+    }
+
+    // إضافة قرار جديد
+    function addDecision() {
+        const name = prompt("اكتب القرار:");
+
+        if (!name || !name.trim()) {
+            return;
+        }
+
+        const row = document.createElement("div");
+        row.className = "task";
+
+        const content = document.createElement("div");
+        content.className = "task-content";
+
+        const title = document.createElement("h3");
+        title.textContent = name.trim();
+
+        const details = document.createElement("small");
+        details.textContent = "قرار جديد";
+
+        content.appendChild(title);
+        content.appendChild(details);
+
+        row.appendChild(content);
+
+        document.getElementById("decisions").prepend(row);
+    }
+
+    // تحديث الإحصائيات عند فتح الصفحة
+    updateStats();
+</script>
+
+</body>
+</html>
